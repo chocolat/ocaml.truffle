@@ -1,0 +1,10 @@
+(name [module signature])
+
+(trigger
+    (tab sig))
+
+(only-in source.ocaml)
+
+(snippet [module %{1="Name"} : sig
+	%{0}
+end])

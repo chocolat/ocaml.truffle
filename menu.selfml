@@ -1,0 +1,10 @@
+(menu command.run
+    ---
+    command.new-method
+    command.new-function
+    ---
+    (submenu Snippets snippet.class snippet.fun snippet.func [snippet.method-(method)] snippet.module --- snippet.for-loop snippet.while-loop --- snippet.let snippet.let-in snippet.match snippet.match-pattern snippet.new-pattern-match [snippet.type-(type)])
+    command.wrap-line
+    snippet.begin
+    snippet.try
+    command.show-type)

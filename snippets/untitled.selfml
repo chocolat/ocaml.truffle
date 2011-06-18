@@ -1,0 +1,10 @@
+(name untitled)
+
+(trigger
+    (tab thread))
+
+(only-in source.ocaml)
+
+(snippet [ignore (Thread.create (fun () -> 
+    %{0}
+  ) ())])

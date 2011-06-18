@@ -1,0 +1,11 @@
+(name try)
+
+(trigger
+    (tab try))
+
+(only-in source.ocaml)
+
+(snippet [try
+	%{0}
+with
+| _ -> failwith "Unknown"])

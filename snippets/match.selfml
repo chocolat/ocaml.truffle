@@ -1,0 +1,10 @@
+(name match)
+
+(trigger
+    (tab match))
+
+(only-in source.ocaml)
+
+(snippet [match %{1="value"} with
+| %{2="patt"} -> %{3="expr"}
+| %{4="_"} -> %{5="expr2"}])

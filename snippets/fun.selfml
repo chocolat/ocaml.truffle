@@ -1,0 +1,8 @@
+(name function)
+
+(trigger
+    (tab fun))
+
+(only-in source.ocaml)
+
+(snippet [(fun %{1="()"} -> %{2="body"})])

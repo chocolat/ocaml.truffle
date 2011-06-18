@@ -1,0 +1,9 @@
+(name [new pattern match])
+
+(trigger
+    (key [[shift][cmd]|]))
+
+(only-in source.ocaml)
+
+(snippet [
+| %{1="patt"} -> %{2="expr"}])

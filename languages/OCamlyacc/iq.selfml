@@ -1,0 +1,74 @@
+(detector
+    (extension mly))
+
+(folding
+    (start [%{|%%])
+    (stop [%}|%%]))
+
+(in source.ocaml
+    (indentation.decrease [^\s*(end|done|with|in|else)\b|^\s*;;|^[^\("]*\)])
+    (indentation.increase [^.*(\([^)"\n]*|begin)$|\bobject\s*$|\blet [a-zA-Z0-9_-]+( [^ ]+)+ =\s*$|method[ \t]+.*=[ \t]*$|->[ \t]*$|\b(for|while)[ \t]+.*[ \t]+do[ \t]*$|(\btry$|\bif\s+.*\sthen$|\belse|[:=]\s*sig|=\s*struct)\s*$])
+    (indentation.increase-next-line-only [(?!\bif.*then.*(else.*|(;|[ \t]in)[ \t]*$))\bif|\bthen[ \t]*$|\belse[ \t]*$$]))
+
+(in source.ocaml
+    (shell-variables
+        (TM_COMMENT_START [(* ])
+        (TM_COMMENT_END [ *)]))
+    (comment.block [(* ] [ *)]))
+
+(in entity.name.type.class.ocaml
+    (symbol-list
+        (transformation [s/^/class: /])))
+
+(in entity.name.type.exception.ocaml
+    (symbol-list
+        (transformation [s/^/exception: /])))
+
+(in entity.name.type.pattern.stupid-goddamn-hack.ocamllex
+    (symbol-list
+        (transformation [s/^/pattern: /])))
+
+(in entity.name.type.pattern.reference.stupid-goddamn-hack.ocamllex
+    (symbol-list))
+
+(in entity.name.function.entrypoint.ocamllex
+    (symbol-list
+        (transformation [s/^/entrypoint: /])))
+
+(in entity.name.function.non-terminal.ocamlyacc
+    (symbol-list
+        (transformation [s/^/non-terminal: /])))
+
+(in entity.name.function.non-terminal.reference.ocamlyacc
+    (symbol-list))
+
+(in entity.name.type.token.ocamlyacc
+    (symbol-list
+        (transformation [s/^/token: /])))
+
+(in entity.name.type.token.reference.ocamlyacc
+    (symbol-list))
+
+(in storage.type.user-defined.ocaml
+    (symbol-list
+        (transformation [s/^/type: /])))
+
+(in [entity.name.type.variant.ocaml | entity.name.type.variant.polymorphic.ocaml]
+    (symbol-list))
+
+(in source.ocaml
+    (pair "
+        "
+        (smart-typing))
+    (pair `[`
+        `]`
+        (smart-typing)
+        (highlight))
+    (pair [(]
+        [)]
+        (smart-typing)
+        (highlight))
+    (pair [{]
+        [}]
+        (smart-typing)
+        (highlight)))

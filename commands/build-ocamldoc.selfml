@@ -1,0 +1,15 @@
+(trigger
+    (key [[ctrl][alt][cmd]D]))
+
+(name [Build Ocamldoc])
+
+(only-in source.ocaml)
+
+(input nothing)
+
+(output tooltip)
+
+(save nothing)
+
+(script [ocamldoc -html -d /tmp "$TM_FILENAME"
+open /tmp/index.html])

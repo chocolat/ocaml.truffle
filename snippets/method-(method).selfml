@@ -1,0 +1,8 @@
+(name method)
+
+(trigger
+    (tab method))
+
+(only-in source.ocaml)
+
+(snippet [method %{1="name"} = %{0}])

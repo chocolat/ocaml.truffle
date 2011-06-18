@@ -1,0 +1,17 @@
+(trigger
+    (key [[shift][enter]]))
+
+(name [New Method])
+
+(only-in [source.ocaml meta.object])
+
+(input selection word)
+
+(output snippet)
+
+(save nothing)
+
+(script [cat <<SNIPPET
+method ${TM_SELECTED_TEXT:-$TM_CURRENT_WORD} \${1:args} =
+	\$0
+SNIPPET])

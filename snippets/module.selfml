@@ -1,0 +1,10 @@
+(name module)
+
+(trigger
+    (tab module))
+
+(only-in source.ocaml)
+
+(snippet [module %{1="Name"} = struct
+	%{0}
+end])

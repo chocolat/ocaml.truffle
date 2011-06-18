@@ -1,0 +1,8 @@
+(name [match pattern])
+
+(trigger
+    (tab |))
+
+(only-in source.ocaml)
+
+(snippet [| %{1="pattern"} -> %{0}])

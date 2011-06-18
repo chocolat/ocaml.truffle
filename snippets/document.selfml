@@ -1,0 +1,8 @@
+(name Document)
+
+(trigger
+    (tab doc))
+
+(only-in source.ocaml)
+
+(snippet [(** [%{1}] %{0} *)])

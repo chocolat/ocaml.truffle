@@ -1,0 +1,27 @@
+(root source.camlp4.ocaml
+    (zone meta.camlp4-stream.ocaml
+        (start
+            (regex [(\[<)(?=.*?>])]
+                (1 punctuation.definition.camlp4-stream.ocaml)))
+        (end
+            (regex `(?=>])`
+                (1 punctuation.definition.camlp4-stream.ocaml)))
+        (subzones
+            (include @camlpppp-streams)))
+    (zone punctuation.definition.camlp4-stream.ocaml
+        (match
+            (regex [\[<|>]])))
+    (zone keyword.other.camlp4.ocaml
+        (match
+            (regex [\bparser\b|<(<|:)|>>|\$(:|\${0,1})]))))
+
+(collection camlpppp-streams
+    (zone meta.camlp4-stream.element.ocaml
+        (start
+            (regex [(')]
+                (1 punctuation.definition.camlp4.simple-element.ocaml)))
+        (end
+            (regex `(;)(?=\s*')|(?=\s*>])`
+                (1 punctuation.separator.camlp4.ocaml)))
+        (subzones
+            (include source.ocaml))))

@@ -1,0 +1,10 @@
+(name [function alt])
+
+(trigger
+    (tab func))
+
+(only-in source.ocaml)
+
+(snippet [(function
+| %{1="patt1"} -> %{2="expr1"}
+| %{3="patt2"} -> %{4="expr2"})])

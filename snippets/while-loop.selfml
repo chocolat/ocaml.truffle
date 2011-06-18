@@ -1,0 +1,10 @@
+(name [while loop])
+
+(trigger
+    (tab while))
+
+(only-in source.ocaml)
+
+(snippet [while %{1="condition"} do
+	%{0}
+done])

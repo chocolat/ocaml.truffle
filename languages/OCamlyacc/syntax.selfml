@@ -1,0 +1,171 @@
+(root source.ocamlyacc
+    (zone meta.header.ocamlyacc
+        (start
+            (regex [(%{)\s*$]
+                (1 punctuation.section.header.begin.ocamlyacc)))
+        (end
+            (regex [^\s*(%})]
+                (1 punctuation.section.header.end.ocamlyacc)))
+        (subzones
+            (include source.ocaml)))
+    (zone meta.declarations.ocamlyacc
+        (start
+            (regex [(?<=%})\s*$]))
+        (end
+            (regex [(?:^)(?=%%)]))
+        (subzones
+            (include @comments)
+            (include @declaration-matches)))
+    (zone meta.rules.ocamlyacc
+        (start
+            (regex [(%%)\s*$]
+                (1 punctuation.section.rules.begin.ocamlyacc)))
+        (end
+            (regex [^\s*(%%)]
+                (1 punctuation.section.rules.end.ocamlyacc)))
+        (subzones
+            (include @comments)
+            (include @rules)))
+    (include source.ocaml)
+    (include @comments)
+    (zone invalid.illegal.unrecognized-character.ocaml
+        (match
+            (list ’ ‘ “ ”))))
+
+(collection comments
+    (zone comment.block.ocamlyacc
+        (start
+            (regex /\*))
+        (end
+            (regex \*/))
+        (subzones
+            (include @comments)))
+    (zone comment.block.string.quoted.double.ocamlyacc
+        (start
+            (regex [(?=[^\\])(")]))
+        (end ")
+        (subzones
+            (zone comment.block.string.constant.character.escape.ocamlyacc
+                (match
+                    (regex [\\(x[a-fA-F0-9][a-fA-F0-9]|[0-2]\d\d|[bnrt'"\\])]))))))
+
+(collection rule-patterns
+    (zone meta.rule-match.ocaml
+        (start
+            (regex [((?<!\||:)(\||:)(?!\||:))]
+                (0 punctuation.separator.rule.ocamlyacc)))
+        (end
+            (regex [\s*(?=\||;)]))
+        (subzones
+            (include @precs)
+            (include @semantic-actions)
+            (include @references)
+            (include @comments))))
+
+(collection symbol-types
+    (zone meta.token.type-declaration.ocamlyacc
+        (start
+            (regex <
+                (0 punctuation.definition.type-declaration.begin.ocamlyacc)))
+        (end
+            (regex >
+                (0 punctuation.definition.type-declaration.end.ocamlyacc)))
+        (subzones
+            (include source.ocaml))))
+
+(collection declaration-matches
+    (zone meta.token.declaration.ocamlyacc
+        (start
+            (regex [(%)(token)]
+                (1 keyword.other.decorator.token.ocamlyacc)
+                (2 keyword.other.token.ocamlyacc)))
+        (end
+            (regex [^\s*($|(^\s*(?=%)))]))
+        (subzones
+            (include @symbol-types)
+            (zone entity.name.type.token.ocamlyacc
+                (match
+                    (regex [[A-Z][A-Za-z0-9_]*])))
+            (include @comments)))
+    (zone meta.token.associativity.ocamlyacc
+        (start
+            (regex [(%)(left|right|nonassoc)]
+                (1 keyword.other.decorator.token.associativity.ocamlyacc)
+                (2 keyword.other.token.associativity.ocamlyacc)))
+        (end
+            (regex [(^\s*$)|(^\s*(?=%))]))
+        (subzones
+            (zone entity.name.type.token.ocamlyacc
+                (match
+                    (regex [[A-Z][A-Za-z0-9_]*])))
+            (zone entity.name.function.non-terminal.reference.ocamlyacc
+                (match
+                    (regex [[a-z][A-Za-z0-9_]*])))
+            (include @comments)))
+    (zone meta.start-symbol.ocamlyacc
+        (start
+            (regex [(%)(start)]
+                (1 keyword.other.decorator.start-symbol.ocamlyacc)
+                (2 keyword.other.start-symbol.ocamlyacc)))
+        (end
+            (regex [(^\s*$)|(^\s*(?=%))]))
+        (subzones
+            (zone entity.name.function.non-terminal.reference.ocamlyacc
+                (match
+                    (regex [[a-z][A-Za-z0-9_]*])))
+            (include @comments)))
+    (zone meta.symbol-type.ocamlyacc
+        (start
+            (regex [(%)(type)]
+                (1 keyword.other.decorator.symbol-type.ocamlyacc)
+                (2 keyword.other.symbol-type.ocamlyacc)))
+        (end
+            (regex [$\s*(?!%)]))
+        (subzones
+            (include @symbol-types)
+            (zone entity.name.type.token.reference.ocamlyacc
+                (match
+                    (regex [[A-Z][A-Za-z0-9_]*])))
+            (zone entity.name.function.non-terminal.reference.ocamlyacc
+                (match
+                    (regex [[a-z][A-Za-z0-9_]*])))
+            (include @comments))))
+
+(collection precs
+    (zone meta.precidence.declaration
+        (match
+            (regex [(%)(prec)\s+(([a-z][a-zA-Z0-9_]*)|(([A-Z][a-zA-Z0-9_]*)))]
+                (4 entity.name.function.non-terminal.reference.ocamlyacc)
+                (5 entity.name.type.token.reference.ocamlyacc)
+                (1 keyword.other.decorator.precedence.ocamlyacc)
+                (2 keyword.other.precedence.ocamlyacc)))))
+
+(collection references
+    (zone entity.name.function.non-terminal.reference.ocamlyacc
+        (match
+            (regex [[a-z][a-zA-Z0-9_]*])))
+    (zone entity.name.type.token.reference.ocamlyacc
+        (match
+            (regex [[A-Z][a-zA-Z0-9_]*]))))
+
+(collection rules
+    (zone meta.non-terminal.ocamlyacc
+        (start
+            (regex [[a-z][a-zA-Z_]*]
+                (0 entity.name.function.non-terminal.ocamlyacc)))
+        (end
+            (regex ;
+                (0 punctuation.separator.rule.ocamlyacc)))
+        (subzones
+            (include @rule-patterns))))
+
+(collection semantic-actions
+    (zone meta.action.semantic.ocamlyacc
+        (start
+            (regex [[^\']({)]
+                (1 punctuation.definition.action.semantic.ocamlyacc)))
+        (end
+            (regex [(})]
+                (1 punctuation.definition.action.semantic.ocamlyacc)))
+        (subzones
+            (include source.ocaml))))

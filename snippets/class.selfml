@@ -1,0 +1,11 @@
+(name class)
+
+(trigger
+    (tab class))
+
+(only-in source.ocaml)
+
+(snippet [class %{1="name"} =
+	object %{2="(self)"}
+		%{3="contents"}
+	end])

@@ -1,0 +1,16 @@
+(trigger
+    (key [[shift][enter]]))
+
+(name [New Function])
+
+(only-in source.ocaml)
+
+(input selection word)
+
+(output snippet)
+
+(save nothing)
+
+(script [echo let ${TM_SELECTED_TEXT:-$TM_CURRENT_WORD} \${1:args} =
+echo -n	\$0
+])

@@ -1,0 +1,10 @@
+(name [module type])
+
+(trigger
+    (tab mtype))
+
+(only-in source.ocaml)
+
+(snippet [module type %{1="Name"} = sig
+	%{0}
+end])

@@ -1,0 +1,150 @@
+(root source.ocamllex
+    (zone meta.embedded.ocaml
+        (start
+            (regex [^\s*({)]
+                (1 punctuation.section.embedded.ocaml.begin.ocamllex)))
+        (end
+            (regex [^\s*(})]
+                (1 punctuation.section.embedded.ocaml.end.ocamllex)))
+        (subzones
+            (include source.ocaml)))
+    (zone meta.pattern-definition.ocaml
+        (start
+            (regex [\b(let)\s+([a-z][a-zA-Z0-9'_]*)\s+=]
+                (1 keyword.other.pattern-definition.ocamllex)
+                (2 entity.name.type.pattern.stupid-goddamn-hack.ocamllex)))
+        (end
+            (regex [^(?:\s*let)|(?:\s*(rule|$))]))
+        (subzones
+            (include @match-patterns)))
+    (zone meta.pattern-match.ocaml
+        (start
+            (regex [(rule|and)\s+([a-z][a-zA-Z0-9_]*)\s+(=)\s+(parse)(?=\s*$)|((?<!\|)(\|)(?!\|))]
+                (3 keyword.operator.ocamllex)
+                (4 keyword.other.ocamllex)
+                (5 punctuation.separator.match-pattern.ocamllex)
+                (1 keyword.other.ocamllex)
+                (2 entity.name.function.entrypoint.ocamllex)))
+        (end
+            (regex [(?:^\s*((and)\b|(?=\|)|$))]
+                (3 keyword.other.entry-definition.ocamllex)))
+        (subzones
+            (include @match-patterns)
+            (include @actions)))
+    (include @strings)
+    (include @comments)
+    (zone keyword.operator.symbol.ocamllex
+        (match =))
+    (zone meta.paren-group.ocamllex
+        (start
+            (regex [\(]))
+        (end
+            (regex [\)]))
+        (subzones
+            (include $self)))
+    (zone invalid.illegal.unrecognized-character.ocamllex
+        (match
+            (list ’ ‘ “ ”))))
+
+(collection comments
+    (zone comment.block.ocaml
+        (match
+            (regex [\(\*(?:(\*)| ( )\*)\)]
+                (1 comment.block.empty.ocaml)
+                (2 comment.block.empty.ocaml))))
+    (zone comment.block.ocaml
+        (start
+            (regex [\(\*]))
+        (end
+            (regex [\*\)]))
+        (subzones
+            (include @comments)))
+    (zone comment.block.string.quoted.double.ocaml
+        (start
+            (regex [(?=[^\\])(")]))
+        (end ")
+        (subzones
+            (zone comment.block.string.constant.character.escape.ocaml
+                (match
+                    (regex [\\(x[a-fA-F0-9][a-fA-F0-9]|[0-2]\d\d|[bnrt'"\\])]))))))
+
+(collection chars
+    (zone constant.character.ocamllex
+        (match
+            (regex [(')([^\\]|\\(x[a-fA-F0-9][a-fA-F0-9]|[0-2]\d\d|[bnrt'"\\]))(')]
+                (4 punctuation.definition.char.end.ocamllex)
+                (1 punctuation.definition.char.begin.ocamllex)))))
+
+(collection match-patterns
+    (zone meta.pattern.sub-pattern.ocamllex
+        (start
+            (regex [(\()]
+                (1 punctuation.definition.sub-pattern.begin.ocamllex)))
+        (end
+            (regex [(\))]
+                (1 punctuation.definition.sub-pattern.end.ocamllex)))
+        (subzones
+            (include @match-patterns)))
+    (zone entity.name.type.pattern.reference.stupid-goddamn-hack.ocamllex
+        (match
+            (regex [[a-z][a-zA-Z0-9'_]])))
+    (zone keyword.other.pattern.ocamllex
+        (match as
+            (boundary.both)))
+    (zone constant.language.eof.ocamllex
+        (match eof))
+    (zone constant.language.universal-match.ocamllex
+        (match _))
+    (zone meta.pattern.character-class.ocamllex
+        (start
+            (regex `(\[)(\^?)`
+                (1 punctuation.definition.character-class.begin.ocamllex)
+                (2 punctuation.definition.character-class.negation.ocamllex)))
+        (end
+            (regex `(])(?!\')`
+                (1 punctuation.definition.character-class.end.ocamllex)))
+        (subzones
+            (zone punctuation.separator.character-class.range.ocamllex
+                (match -))
+            (include @chars)))
+    (zone keyword.operator.pattern.modifier.ocamllex
+        (match
+            (regex \*|\+|\?)))
+    (zone keyword.operator.pattern.alternation.ocamllex
+        (match
+            (regex \|)))
+    (include @chars)
+    (include @strings))
+
+(collection strings
+    (zone string.quoted.double.ocamllex
+        (start
+            (regex [(?=[^\\])(")]
+                (1 punctuation.definition.string.begin.ocaml)))
+        (end
+            (regex [(")]
+                (1 punctuation.definition.string.end.ocaml)))
+        (subzones
+            (zone punctuation.separator.string.ignore-eol.ocaml
+                (match
+                    (regex [\\$[ \t]*])))
+            (zone constant.character.string.escape.ocaml
+                (match
+                    (regex [\\(x[a-fA-F0-9][a-fA-F0-9]|[0-2]\d\d|[bnrt'"\\])])))
+            (zone constant.character.regexp.escape.ocaml
+                (match
+                    (regex [\\[\|\(\)1-9$^.*+?\[\]]])))
+            (zone invalid.illegal.character.string.escape
+                (match
+                    (regex [\\(?!(x[a-fA-F0-9][a-fA-F0-9]|[0-2]\d\d|[bnrt'"\\]|[\|\(\)1-9$^.*+?\[\]]|$[ \t]*))(?:.)]))))))
+
+(collection actions
+    (zone meta.action.ocamllex
+        (start
+            (regex [[^\']({)]
+                (1 punctuation.definition.action.begin.ocamllex)))
+        (end
+            (regex [(})]
+                (1 punctuation.definition.action.end.ocamllex)))
+        (subzones
+            (include source.ocaml))))

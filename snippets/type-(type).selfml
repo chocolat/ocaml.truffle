@@ -1,0 +1,8 @@
+(name type)
+
+(trigger
+    (tab type))
+
+(only-in source.ocaml)
+
+(snippet [type %{1="name"} = %{0}])

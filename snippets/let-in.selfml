@@ -1,0 +1,8 @@
+(name [let in])
+
+(trigger
+    (tab lin))
+
+(only-in source.ocaml)
+
+(snippet [let %{1="var(s)"} = %{2="expr"} in %{3="expr2"}])

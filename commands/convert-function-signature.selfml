@@ -1,0 +1,52 @@
+(trigger
+    (key [[ctrl][alt][cmd]C]))
+
+(name [Convert function signature])
+
+(only-in source.ocaml)
+
+(input selection line)
+
+(output replace-selected)
+
+(save nothing)
+
+(script [#!/usr/bin/env ruby
+
+# Converts function signatures into function defs
+# val of_gtk : ?cols:cols 
+#   -> ?expand:expand
+#   -> ?fill:bool 
+#   -> GObj.widget 
+#   -> unit t
+
+val = $stdin.read
+
+start_padding = val[/^\s*/m]
+end_padding = val[/\s*$/m]
+val.strip!
+
+parts = val.split(/:/)
+
+name = parts[0]
+name.sub!(/^(\s*)val/, "\1let")
+
+args = parts[1..-1].join(':').split(/\s*->\s*/)
+next_arg = 'a'
+args = args.map do |arg|
+  arg.strip!
+  if arg =~ /^\?.*:/
+    arg[/^(\?.*?):/, 1]
+  elsif arg =~ /:/
+    "~" + arg[/^(.*?):/, 1]
+  elsif arg == "unit"
+    "()"
+  else
+    arg = next_arg
+    next_arg = next_arg.succ
+    arg
+  end
+end
+
+print "#{start_padding}#{name.rstrip} #{args.join(' ')} =\n\n;;#{end_padding}" 
+])

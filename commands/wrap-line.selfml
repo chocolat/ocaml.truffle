@@ -1,0 +1,14 @@
+(trigger
+    (key [[ctrl]Q]))
+
+(name [Wrap Line])
+
+(only-in source.ocaml)
+
+(input selection line)
+
+(output replace-selected)
+
+(save nothing)
+
+(script ["${TM_BUNDLE_SUPPORT}/wrap"])

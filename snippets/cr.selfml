@@ -1,0 +1,8 @@
+(name CR)
+
+(trigger
+    (tab cr))
+
+(only-in source)
+
+(snippet [(* CR `whoami`: %{1} *)%{0}])

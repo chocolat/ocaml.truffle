@@ -1,0 +1,11 @@
+(name [for loop])
+
+(trigger
+    (tab for))
+
+(only-in source.ocaml)
+
+(snippet [for %{1="i"} = %{2="startval"} to %{3="endval"} do
+	%{4}
+done
+%{0}])

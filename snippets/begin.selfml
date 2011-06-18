@@ -1,0 +1,10 @@
+(name begin)
+
+(trigger
+    (tab begin))
+
+(only-in source.ocaml)
+
+(snippet [begin
+	%{0}
+end])

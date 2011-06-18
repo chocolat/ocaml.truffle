@@ -1,0 +1,673 @@
+(root source.ocaml
+    (zone meta.module.binding
+        (match
+            (regex [\b(let)\s+(module)\s+([A-Z][a-zA-Z0-9'_]*)\s*(=)]
+                (3 support.other.module.ocaml)
+                (4 punctuation.separator.module-binding.ocmal)
+                (1 keyword.other.module-binding.ocaml)
+                (2 keyword.other.module-definition.ocaml))))
+    (zone meta.function.ocaml
+        (start
+            (regex [\b(let|and)\s+(?!\(\*)((rec\s+)([a-z_][a-zA-Z0-9_']*)\b|([a-z_][a-zA-Z0-9_']*|\([^)]+\))(?=\s)((?=\s*=\s*(?=fun(?:ction)\b))|(?!\s*=)))]
+                (3 keyword.other.funtion-definition.ocaml)
+                (4 entity.name.function.ocaml)
+                (5 entity.name.function.ocaml)
+                (1 keyword.other.function-definition.ocaml)))
+        (end
+            (regex [(?:(:)\s*([^=]+))?(?:(=)|(=)\s*(?=fun(?:ction)\b))]
+                (3 keyword.operator.ocaml)
+                (4 keyword.operator.ocaml)
+                (1 punctuation.separator.function.type-constraint.ocaml)
+                (2 storage.type.ocaml)))
+        (subzones
+            (include @variables)))
+    (zone meta.function.anonymous.ocaml
+        (start
+            (regex [(\(|\s)(?=fun\s)]
+                (1 punctuation.definition.function.anonymous.ocaml)))
+        (end
+            (regex [(\))]
+                (1 punctuation.definition.function.anonymous.ocaml)))
+        (subzones
+            (zone meta.function.anonymous.definition.ocaml
+                (start
+                    (regex [(?<=(\(|\s))(fun)\s]
+                        (2 keyword.other.function-definition.ocaml)))
+                (end
+                    (regex [(->)]
+                        (1 punctuation.separator.function-definition.ocaml)))
+                (subzones
+                    (include @variables)))
+            (include $self)))
+    (zone meta.type-definition-group.ocaml
+        (start
+            (regex [^\s*(?=type\s)]))
+        (end
+            (regex [\b(?=let|end|val)|^\s*$]))
+        (subzones
+            (zone meta.type-definition.ocaml
+                (start
+                    (regex [\b(type|and)\s+([^=]*)(=)?]
+                        (3 punctuation.separator.type-definition.ocaml)
+                        (1 keyword.other.type-definition.ocaml)
+                        (2 storage.type.ocaml)))
+                (end
+                    (regex [(?=\b(type|and|let|end|val)\b)|(?=^\s*$)]))
+                (subzones
+                    (include @typedefs)))))
+    (zone meta.pattern-match.ocaml
+        (start
+            (regex [\b(with|function)(?=(\s*$|.*->))\b|((?<!\S)(\|)(?=(\w|\s).*->))]
+                (3 keyword.control.match-definition.ocaml)
+                (1 keyword.control.match-definition.ocaml)
+                (2 keyword.other.function-definition.ocaml)))
+        (end
+            (regex [(?:(->)|\b(when)\b|\s(?=\|))]
+                (1 punctuation.separator.match-definition.ocaml)
+                (2 keyword.control.match-condition.ocaml)))
+        (subzones
+            (include @matchpatterns)))
+    (zone meta.class.type-definition.ocaml
+        (match
+            (regex [^[ \t]*(class\s+type\s+)((\[\s*('[A-Za-z][a-zA-Z0-9_']*(?:\s*,\s*'[A-Za-z][a-zA-Z0-9_']*)*)\s*\]\s+)?[a-z_][a-zA-Z0-9'_]*)]
+                (4 storage.type.ocaml)
+                (1 keyword.other.class-type-definition.ocaml)
+                (2 entity.name.type.class-type.ocaml))))
+    (zone meta.class.ocaml
+        (start
+            (regex [^[ \t]*(class)(?:\s+(?!(?:virtual)\s+))((\[\s*('[A-Za-z][a-zA-Z0-9_']*(?:\s*,\s*'[A-Za-z][a-zA-Z0-9_']*)*)\s*\]\s+)?[a-z_][a-zA-Z0-9'_]*)]
+                (4 storage.type.ocaml)
+                (1 keyword.other.class-definition.ocaml)
+                (2 entity.name.type.class.ocaml)))
+        (end
+            (regex [(=)]
+                (1 keyword.operator.ocaml)))
+        (subzones
+            (include @variables)))
+    (zone meta.class.virtual.ocaml
+        (start
+            (regex [^[ \t]*(class\s+virtual\s+)((\[\s*('[A-Za-z][a-zA-Z0-9_']*(?:\s*,\s*'[A-Za-z][a-zA-Z0-9_']*)*)\s*\]\s+)?[a-z_][a-zA-Z0-9'_]*)]
+                (4 storage.type.ocaml)
+                (1 keyword.other.class-definition.ocaml)
+                (2 entity.name.type.class.ocaml)))
+        (end
+            (regex [(=)]
+                (1 keyword.operator.ocaml)))
+        (subzones
+            (include @variables)))
+    (zone meta.class.virtual.type-definition.ocaml
+        (match
+            (regex [^[ \t]*(class\s+type\s+virtual)((\[\s*('[A-Za-z][a-zA-Z0-9_']*(?:\s*,\s*'[A-Za-z][a-zA-Z0-9_']*)*)\s*\]\s+)?[a-z_][a-zA-Z0-9'_]*)]
+                (4 storage.type.ocaml)
+                (1 keyword.other.class-type-definition.ocaml)
+                (2 entity.name.type.class-type.ocaml))))
+    (zone meta.record.ocaml
+        (start
+            (regex [(\{)]
+                (1 punctuation.definition.record.ocaml)))
+        (end
+            (regex [(\})]
+                (1 punctuation.definition.record.ocaml)))
+        (subzones
+            (zone keyword.other.language.ocaml
+                (match with
+                    (boundary.both)))
+            (zone meta.record.definition.ocaml
+                (start
+                    (regex [(\bmutable\s+)?\b([a-z_][a-zA-Z0-9_']*)\s*(:)]
+                        (3 punctuation.definition.record.ocaml)
+                        (1 keyword.other.storage.modifier.ocaml)
+                        (2 source.ocaml)))
+                (end
+                    (regex [(;|(?=}))]
+                        (1 keyword.operator.ocaml)))
+                (subzones
+                    (include @typedefs)))
+            (include $self)))
+    (zone meta.object.ocaml
+        (start
+            (regex [\b(object)\s*(?:(\()(_?[a-z]+)(\)))?\s*$]
+                (3 entity.name.type.self-binding.ocaml)
+                (4 punctuation.definition.self-binding.ocaml)
+                (1 keyword.other.object-definition.ocaml)
+                (2 punctuation.definition.self-binding.ocaml)))
+        (end
+            (regex [\b(end)\b]
+                (1 keyword.control.object.ocaml)
+                (2 punctuation.terminator.expression.ocaml)))
+        (subzones
+            (zone meta.method.ocaml
+                (start
+                    (regex [\b(method)\s+(virtual\s+)?(private\s+)?([a-z_][a-zA-Z0-9'_]*)]
+                        (3 keyword.other.method-restriction.ocaml)
+                        (4 entity.name.function.method.ocaml)
+                        (1 keyword.other.method-definition.ocaml)
+                        (2 keyword.other.method-definition.ocaml)))
+                (end
+                    (regex [(=|:)]
+                        (1 keyword.operator.ocaml)))
+                (subzones
+                    (include @variables)))
+            (zone meta.object.type-constraint.ocaml
+                (start
+                    (regex [(constraint)\s+([a-z_'][a-zA-Z0-9'_]*)\s+(=)]
+                        (3 keyword.operator.ocaml)
+                        (1 keyword.other.language.ocaml)
+                        (2 storage.type.ocaml)))
+                (end
+                    (regex [(#[a-z_][a-zA-Z0-9'_]*)|(int|char|float|string|list|array|bool|unit|exn|option|int32|int64|nativeint|format4|lazy_t)|([a-z_][a-zA-Z0-9'_]*)\s*$]
+                        (3 storage.type.ocaml)
+                        (1 storage.type.polymorphic-variant.ocaml)
+                        (2 storage.type.ocaml))))
+            (include $self)))
+    (zone meta.method-call.ocaml
+        (match
+            (regex [(?<=\w|\)|')(#)[a-z_][a-zA-Z0-9'_]*]
+                (1 punctuation.separator.method-call.ocaml))))
+    (zone meta.module.ocaml
+        (match
+            (regex [^[ \t]*(module)\s+([A-Z_][a-zA-Z0-9'_]*)(?:\s*(:)\s*([A-Z][a-zA-Z0-9'_]*)?)?]
+                (3 punctuation.separator.module-definition.ocaml)
+                (4 entity.name.type.module-type.ocaml)
+                (1 keyword.other.module-definition.ocaml)
+                (2 entity.name.type.module.ocaml))))
+    (zone meta.module.type.ocaml
+        (match
+            (regex [^[ \t]*(module\s+type\s+)([A-Z][a-zA-Z0-9'_]*)]
+                (1 keyword.other.module-type-definition.ocaml)
+                (2 entity.name.type.module-type.ocaml))))
+    (zone meta.module.signature.ocaml
+        (start
+            (regex [\b(sig)\b]
+                (1 keyword.other.module.signature.ocaml)))
+        (end
+            (regex [\b(end)\b]
+                (3 keyword.operator.ocaml)
+                (1 keyword.other.module.signature.ocaml)
+                (2 punctuation.terminator.expression.ocaml)))
+        (subzones
+            (include @module-signature)
+            (include $self)))
+    (zone meta.module.structure.ocaml
+        (start
+            (regex [\b(struct)\b]
+                (1 keyword.other.module.structure.ocaml)))
+        (end
+            (regex [\b(end)\b]
+                (1 keyword.other.module.structure.ocaml)))
+        (subzones
+            (include $self)))
+    (include @moduleref)
+    (zone meta.module.open.ocaml
+        (start
+            (regex [\b(open)\s+([A-Z][a-zA-Z0-9'_]*)(?=(\.[A-Z][a-zA-Z0-9_]*)*)]
+                (1 keyword.other.ocaml)
+                (2 support.other.module.ocaml)))
+        (end
+            (regex [(\s|$)]))
+        (subzones
+            (zone support.other.module.ocaml
+                (match
+                    (regex [(\.)([A-Z][a-zA-Z0-9'_]*)]
+                        (1 punctuation.separator.module-reference.ocaml))))))
+    (zone meta.exception.ocaml
+        (match
+            (regex [\b(exception)\s+([A-Z][a-zA-Z0-9'_]*)\b]
+                (1 keyword.other.ocaml)
+                (2 entity.name.type.exception.ocaml))))
+    (zone source.camlp4.embedded.ocaml
+        (start
+            (regex `(?=(\[<)(?![^\[]+?[^>]]))`))
+        (end
+            (regex `(>])`
+                (1 punctuation.definition.camlp4-stream.ocaml)))
+        (subzones
+            (include source.camlp4.ocaml)))
+    (include @strings)
+    (include @constants)
+    (include @comments)
+    (include @lists)
+    (include @arrays)
+    (zone meta.type-constraint.ocaml
+        (start
+            (regex [(\()(?=(~[a-z][a-zA-Z0-9_]*:|("(\\"|[^"])*")|[^\(\)~"])+(?<!:)(:>|:(?![:=])))]
+                (1 punctuation.section.type-constraint.ocaml)))
+        (end
+            (regex [(?<!:)(:>|:(?![:=]))(.*?)(\))]
+                (3 punctuation.section.type-constraint.ocaml)
+                (1 punctuation.separator.type-constraint.ocaml)
+                (2 storage.type.ocaml)))
+        (subzones
+            (include $self)))
+    (zone keyword.other.directive.ocaml
+        (match
+            (regex [^[ \t]*#[a-zA-Z]+])))
+    (zone keyword.other.directive.line-number.ocaml
+        (match
+            (regex [^[ \t]*#[0-9]*])))
+    (include @storagetypes)
+    (zone keyword.other.storage.modifier.ocaml
+        (match
+            (list mutable ref)
+            (boundary.both)))
+    (zone entity.name.type.variant.polymorphic.ocaml
+        (match
+            (regex [`[A-Za-z][a-zA-Z0-9'_]*\b])))
+    (zone entity.name.type.variant.ocaml
+        (match
+            (regex [\b[A-Z][a-zA-Z0-9'_]*\b])))
+    (zone keyword.operator.symbol.ocaml
+        (match
+            (regex !=|:=|>|<)))
+    (zone keyword.operator.infix.floating-point.ocaml
+        (match
+            (regex [[*+/-]\.])))
+    (zone keyword.operator.prefix.floating-point.ocaml
+        (match
+            (regex ~-\.)))
+    (zone punctuation.definition.list.constructor.ocaml
+        (match ::))
+    (zone punctuation.terminator.expression.ocaml
+        (match ;;))
+    (zone punctuation.separator.ocaml
+        (match ;))
+    (zone punctuation.separator.function-return.ocaml
+        (match ->))
+    (zone keyword.operator.infix.ocaml
+        (match
+            (regex [[=<>@^&+\-*/$%|][|!$%&*+./:<=>?@^~-]*])))
+    (zone keyword.operator.prefix.ocaml
+        (match
+            (regex [\bnot\b|!|[!\?~][!$%&*+./:<=>?@^~-]+])))
+    (zone entity.name.tag.label.ocaml
+        (match
+            (regex [~[a-z][a-z0-9'_]*(:)?]
+                (1 punctuation.separator.argument-label.ocaml))))
+    (zone meta.begin-end-group.ocaml
+        (start
+            (regex [\b(begin)\b]
+                (1 keyword.control.begin-end.ocaml)))
+        (end
+            (regex [\b(end)\b]
+                (1 keyword.control.begin-end.ocaml)))
+        (subzones
+            (include $self)))
+    (zone meta.for-loop.ocaml
+        (start
+            (regex [\b(for)\b]
+                (1 keyword.control.for-loop.ocaml)))
+        (end
+            (regex [\b(done)\b]
+                (1 keyword.control.for-loop.ocaml)))
+        (subzones
+            (zone keyword.control.loop.ocaml
+                (match do
+                    (boundary.both)))
+            (include $self)))
+    (zone meta.while-loop.ocaml
+        (start
+            (regex [\b(while)\b]
+                (1 keyword.control.while-loop.ocaml)))
+        (end
+            (regex [\b(done)\b]
+                (1 keyword.control.while-loop.ocaml)))
+        (subzones
+            (zone keyword.control.loop.ocaml
+                (match do
+                    (boundary.both)))
+            (include $self)))
+    (zone meta.paren-group.ocaml
+        (start
+            (regex [\(]))
+        (end
+            (regex [\)]))
+        (subzones
+            (include $self)))
+    (zone keyword.operator.ocaml
+        (match
+            (list and land lor lsl lsr lxor mod or)
+            (boundary.both)))
+    (zone keyword.control.ocaml
+        (match
+            (list downto if else match then to when with try)
+            (boundary.both)))
+    (zone keyword.other.ocaml
+        (match
+            (list as assert class constraint exception functor in include inherit initializer lazy let mod module mutable new object open private rec sig struct type virtual)
+            (boundary.both)))
+    (include @module-signature)
+    (zone invalid.illegal.unrecognized-character.ocaml
+        (match
+            (list ’ ‘ “ ”))))
+
+(collection comments
+    (zone comment.block.ocaml
+        (match
+            (regex [\(\*+(\*)\)]
+                (1 comment.block.empty.ocaml))))
+    (zone comment.block.ocaml
+        (start
+            (regex [\(\*]))
+        (end
+            (regex [\*\)]))
+        (subzones
+            (include @comments)))
+    (zone comment.block.string.quoted.double.ocaml
+        (start
+            (regex [(?=[^\\])(")]))
+        (end ")
+        (subzones
+            (zone comment.block.string.constant.character.escape.ocaml
+                (match
+                    (regex [\\(x[a-fA-F0-9][a-fA-F0-9]|[0-2]\d\d|[bnrt'"\\])]))))))
+
+(collection lists
+    (zone meta.list.ocaml
+        (start
+            (regex `(\[)(?!\||<|>)`
+                (1 punctuation.definition.list.begin.ocaml)))
+        (end
+            (regex `(?<!\||>)(])`
+                (1 punctuation.definition.list.end.ocaml)))
+        (subzones
+            (include @lists)
+            (include $self))))
+
+(collection storagetypes
+    (zone storage.type.ocaml
+        (match
+            (list int char float string list array bool unit exn option int32 int64 nativeint format4 lazy_t)
+            (boundary.both)))
+    (zone storage.type.variant.polymorphic.ocaml
+        (match
+            (regex [#[a-z_][a-zA-Z0-9_]*]))))
+
+(collection definite_storagetypes
+    (include @storagetypes)
+    (zone storage.type.ocaml
+        (match
+            (regex [\b[a-zA-Z0-9'_]+\b]))))
+
+(collection matchpatterns
+    (zone constant.language.universal-match.ocaml
+        (match _
+            (boundary.both)))
+    (zone punctuation.separator.match-pattern.ocaml
+        (match
+            (regex [\|(?=\s*\S)])))
+    (zone meta.match-option.ocaml
+        (start
+            (regex [(\()(?=(?!=.*?->).*?\|)]
+                (1 punctuation.definition.match-option.ocaml)))
+        (end
+            (regex [(\))]
+                (1 punctuation.definition.match-option.ocaml)))
+        (subzones
+            (zone punctuation.separator.match-option.ocaml
+                (match
+                    (regex \|)))
+            (include @matchpatterns)))
+    (include @moduleref)
+    (include @constants)
+    (include @variables)
+    (include $self))
+
+(collection moduleref
+    (zone meta.module-reference.ocaml
+        (match
+            (regex [\b([A-Z][a-zA-Z0-9'_]*)(\.)]))))
+
+(collection arrays
+    (zone meta.array.ocaml
+        (start
+            (regex `(\[\|)`
+                (1 punctuation.definition.array.begin.ocaml)))
+        (end
+            (regex `(\|])`
+                (1 punctuation.definition.array.end.ocaml)))
+        (subzones
+            (include @arrays)
+            (include $self))))
+
+(collection typedefs
+    (zone punctuation.separator.variant-definition.ocaml
+        (match
+            (regex \|)))
+    (include @comments)
+    (zone meta.paren-group.ocaml
+        (start
+            (regex [\(]))
+        (end
+            (regex [\)]))
+        (subzones
+            (include @typedefs)))
+    (zone keyword.other.ocaml
+        (match of
+            (boundary.both)))
+    (include @storagetypes)
+    (zone storage.type.ocaml
+        (match
+            (regex [(?<=\s|\()['a-z_][a-zA-Z0-9_]*\b])))
+    (zone meta.module.type.ocaml
+        (match
+            (regex [\b((?:[A-Z][a-zA-Z0-9'_]*)(?:\.[A-Z][a-zA-Z0-9'_]+)*)(\.[a-zA-Z0-9'_]+)]
+                (1 support.other.module.ocaml)
+                (2 storage.type.module.ocaml))))
+    (zone meta.polymorphic-variant.definition.ocaml
+        (start
+            (regex `(\[(>|<)?)`
+                (1 punctuation.definition.polymorphic-variant.ocaml)))
+        (end
+            (regex `(\])`
+                (1 punctuation.definition.polymorphic-variant.ocaml)))
+        (subzones
+            (include @typedefs)))
+    (include $self)
+    (zone punctuation.separator.algebraic-type.ocaml
+        (match
+            (regex \|))))
+
+(collection constants
+    (zone constant.language.pseudo-variable.ocaml
+        (match
+            (regex [(?:\[\s*(\])|\((\))|\(\s*(\)))]
+                (3 meta.empty-typing-pair.ocaml)
+                (1 meta.empty-typing-pair.ocaml)
+                (2 meta.empty-typing-pair.parens.ocaml))))
+    (zone constant.language.boolean.ocaml
+        (match
+            (list true false)
+            (boundary.both)))
+    (zone constant.numeric.floating-point.ocaml
+        (match
+            (regex [\b-?[0-9][0-9_]*((\.([0-9][0-9_]*([eE][+-]??[0-9][0-9_]*)?)?)|([eE][+-]??[0-9][0-9_]*))])))
+    (zone constant.numeric.integer.nativeint.ocaml
+        (match
+            (regex [\b(-?((0(x|X)[0-9a-fA-F][0-9a-fA-F_]*)|(0(o|O)[0-7][0-7_]*)|(0(b|B)[01][01_]*)|([0-9][0-9_]*)))n])))
+    (zone constant.numeric.integer.int64.ocaml
+        (match
+            (regex [\b(-?((0(x|X)[0-9a-fA-F][0-9a-fA-F_]*)|(0(o|O)[0-7][0-7_]*)|(0(b|B)[01][01_]*)|([0-9][0-9_]*)))L])))
+    (zone constant.numeric.integer.int32.ocaml
+        (match
+            (regex [\b(-?((0(x|X)[0-9a-fA-F][0-9a-fA-F_]*)|(0(o|O)[0-7][0-7_]*)|(0(b|B)[01][01_]*)|([0-9][0-9_]*)))l])))
+    (zone constant.numeric.integer.ocaml
+        (match
+            (regex [\b(-?((0(x|X)[0-9a-fA-F][0-9a-fA-F_]*)|(0(o|O)[0-7][0-7_]*)|(0(b|B)[01][01_]*)|([0-9][0-9_]*)))])))
+    (zone constant.character.ocaml
+        (match
+            (regex ['(.|\\(x[a-fA-F0-9][a-fA-F0-9]|[0-2]\d\d|[bnrt'"\\]))']))))
+
+(collection strings
+    (zone string.quoted.double.ocaml
+        (start
+            (regex [(?=[^\\])(")]
+                (1 punctuation.definition.string.begin.ocaml)))
+        (end
+            (regex [(")]
+                (1 punctuation.definition.string.end.ocaml)))
+        (subzones
+            (zone punctuation.separator.string.ignore-eol.ocaml
+                (match
+                    (regex [\\$[ \t]*])))
+            (zone constant.character.string.escape.ocaml
+                (match
+                    (regex [\\(x[a-fA-F0-9][a-fA-F0-9]|[0-2]\d\d|[bnrt'"\\])])))
+            (zone constant.character.regexp.escape.ocaml
+                (match
+                    (regex [\\[\|\(\)1-9$^.*+?\[\]]])))
+            (zone invalid.illegal.character.string.escape
+                (match
+                    (regex [\\(?!(x[a-fA-F0-9][a-fA-F0-9]|[0-2]\d\d|[bnrt'"\\]|[\|\(\)1-9$^.*+?\[\]]|$[ \t]*))(?:.)]))))))
+
+(collection variables
+    (zone variable.parameter.unit.ocaml
+        (match
+            (regex [\(\)])))
+    (include @constants)
+    (include @moduleref)
+    (zone variable.parameter.labeled.ocaml
+        (start
+            (regex [(~)([a-z][a-zA-Z0-9'_]*)(\s*:\s*)?]
+                (3 punctuation.separator.label.ocaml)
+                (1 punctuation.definition.labeled-parameter.ocaml)
+                (2 entity.name.tag.label.ocaml)))
+        (end
+            (regex [(?=(->|\s))]))
+        (subzones
+            (include @variables)))
+    (zone variable.parameter.optional.ocaml
+        (match
+            (regex [(\?)([a-z][a-zA-Z0-9_]*)]
+                (1 punctuation.definition.optional-parameter.ocaml)
+                (2 entity.name.tag.label.optional.ocaml))))
+    (zone variable.parameter.optional.ocaml
+        (start
+            (regex [(\?)(\()([a-z_][a-zA-Z0-9'_]*)\s*(=)]
+                (3 entity.name.tag.label.optional.ocaml)
+                (4 punctuation.separator.optional-parameter-assignment.ocaml)
+                (1 punctuation.definition.optional-parameter.ocaml)
+                (2 punctuation.definition.optional-parameter.ocaml)))
+        (end
+            (regex [(\))]
+                (1 punctuation.definition.optional-parameter.ocaml)))
+        (subzones
+            (include $self)))
+    (zone meta.parameter.type-constrained.ocaml
+        (start
+            (regex [(\()(?=(~[a-z][a-zA-Z0-9_]*:|("(\\"|[^"])*")|[^\(\)~"])+(?<!:)(:>|:(?![:=])))]
+                (1 punctuation.section.type-constraint.ocaml)))
+        (end
+            (regex [(\))]
+                (1 punctuation.section.type-constraint.ocaml)))
+        (subzones
+            (zone storage.type.ocaml
+                (start
+                    (regex [(?<!:)(:>|:(?![:=]))]
+                        (1 punctuation.separator.type-constraint.ocaml)))
+                (end
+                    (regex [(?=\))]))
+                (subzones
+                    (zone meta.paren.group
+                        (start
+                            (regex [\(]))
+                        (end
+                            (regex [\)])))))
+            (include @variables)))
+    (include @comments)
+    (zone meta.paren-group.ocaml
+        (start
+            (regex [\(]))
+        (end
+            (regex [\)]))
+        (subzones
+            (include @variables)))
+    (zone variable.parameter.tuple.ocaml
+        (start
+            (regex [(\()]
+                (1 punctuation.definition.tuple.ocaml)))
+        (end
+            (regex [(\))]
+                (1 punctuation.definition.tuple.ocaml)))
+        (subzones
+            (include @matchpatterns)
+            (include @variables)
+            (zone punctuation.separator.tuple.ocaml
+                (match ,))))
+    (zone variable.parameter.record.ocaml
+        (start
+            (regex [(\{)]
+                (1 punctuation.definition.record.ocaml)))
+        (end
+            (regex [(\})]
+                (1 punctuation.definition.record.ocaml)))
+        (subzones
+            (include @moduleref)
+            (zone meta.recordfield.match.ocaml
+                (start
+                    (regex [\b([a-z][a-zA-Z0-9'_]*)\s*(=)]
+                        (1 entity.name.tag.record.ocaml)
+                        (2 punctuation.separator.record.field-assignment.ocaml)))
+                (end
+                    (regex [(;)|(?=\})]
+                        (1 punctuation.separator.record.ocaml)))
+                (subzones
+                    (include @matchpatterns)))))
+    (include @storagetypes)
+    (zone variable.parameter.ocaml
+        (match
+            (regex [\b[a-z_][a-zA-Z0-9'_]*]))))
+
+(collection module-signature
+    (zone meta.module.signature.val.ocaml
+        (start
+            (regex [(val)\s+([a-z_][a-zA-Z0-9_']*)\s*(:)]
+                (3 punctuation.separator.type-constraint.ocaml)
+                (1 keyword.other.ocaml)
+                (2 entity.name.type.value-signature.ocaml)))
+        (end
+            (regex [(?=\b(type|val|external|class|module|end)\b)|^\s*$]))
+        (subzones
+            (zone variable.parameter.ameter.optional.ocaml
+                (match
+                    (regex [(\?)([a-z][a-zA-Z0-9_]*)\s*(:)]
+                        (3 punctuation.separator.optional-parameter.ocaml)
+                        (1 punctuation.definition.optional-parameter.ocaml)
+                        (2 entity.name.tag.label.optional.ocaml))))
+            (zone variable.parameter.labeled.ocaml
+                (start
+                    (regex [([a-z][a-zA-Z0-9'_]*)\s*(:)\s*]
+                        (3 storage.type.ocaml)
+                        (1 entity.name.tag.label.ocaml)
+                        (2 punctuation.separator.label.ocaml)))
+                (end
+                    (regex \s))
+                (subzones
+                    (include @definite_storagetypes)))
+            (include @typedefs)))
+    (zone meta.module.signature.external.ocaml
+        (start
+            (regex [(external)\s+([a-z_][a-zA-Z0-9_']*)\s*(:)]
+                (3 punctuation.separator.type-constraint.ocaml)
+                (1 keyword.other.ocaml)
+                (2 entity.name.type.external-signature.ocaml)))
+        (end
+            (regex [(?=\b(type|val|external|class|module|let|end)\b)|^\s*$]))
+        (subzones
+            (zone variable.parameter.optional.ocaml
+                (match
+                    (regex [(\?)([a-z][a-zA-Z0-9_]*)\s*(:)]
+                        (3 punctuation.separator.optional-parameter.ocaml)
+                        (1 punctuation.definition.optional-parameter.ocaml)
+                        (2 entity.name.tag.label.optional.ocaml))))
+            (zone variable.parameter.labeled.ocaml
+                (start
+                    (regex [(~)([a-z][a-zA-Z0-9'_]*)\s*(:)\s*]
+                        (3 punctuation.separator.label.ocaml)
+                        (1 punctuation.definition.labeled-parameter.ocaml)
+                        (2 entity.name.tag.label.ocaml)))
+                (end
+                    (regex \s))
+                (subzones
+                    (include @variables)))
+            (include @strings)
+            (include @typedefs))))
