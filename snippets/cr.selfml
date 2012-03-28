@@ -5,4 +5,4 @@
 
 (only-in source)
 
-(snippet [(* CR `whoami`: %{1} *)%{0}])
+(snippet [(* CR %{`whoami`}: %{1} *)%{0}])
